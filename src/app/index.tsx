@@ -1,4 +1,12 @@
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ActionCard from "../components/ActionCard";
 import SectionCard from "../components/SectionCard";
@@ -18,25 +26,25 @@ const ACCOUNTS: Account[] = [
   {
     id: "ac1",
     name: "TD STUDENT CHEQUING ACCOUNT",
-    balance: 1111.11,
+    balance: 111111.11,
     accountNumber: "1111111111111111",
   },
   {
     id: "ac2",
     name: "TD EVERY DAY SAVINGS ACCOUNT",
-    balance: 2222.22,
+    balance: 222222.22,
     accountNumber: "2222222222222222",
   },
   {
     id: "ac3",
     name: "TD CASH BACK VISA* CARD",
-    balance: 3333.33,
+    balance: 33333.33,
     accountNumber: "3333333333333333",
   },
   {
     id: "ac4",
     name: "MULTI-HOLDING TFSA",
-    balance: 4444.44,
+    balance: 444444.44,
     accountNumber: "4444444444444444",
   },
 ];
@@ -125,6 +133,17 @@ export default function Index() {
             />
           );
         })}
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => Alert.alert("Alert", "Alert Button pressed")}
+          style={({ pressed }) => [
+            styles.alertButton,
+            pressed && styles.alertButtonPressed,
+          ]}
+        >
+          <Text style={styles.alertButtonText}>Alert</Text>
+        </Pressable>
       </ScrollView>
 
       <SafeAreaView edges={["bottom"]} style={styles.safeNavigation}>
@@ -223,6 +242,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 22,
     paddingHorizontal: 4,
+  },
+  alertButton: {
+    minHeight: 48,
+    marginTop: 8,
+    marginBottom: 8,
+    borderRadius: 24,
+    backgroundColor: "#E53935",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  alertButtonPressed: {
+    opacity: 0.8,
+  },
+  alertButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: "600",
   },
   headingTitle: {
     flexDirection: "row",
