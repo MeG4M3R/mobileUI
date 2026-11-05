@@ -8,7 +8,8 @@ const OPTIONS = [
     id: "etransfer",
     icon: "➤",
     title: "Interac e-Transfer®",
-    description: "Send money, view your payment history and manage your contacts",
+    description:
+      "Send money, view your payment history and manage your contacts",
     italicTitle: true,
   },
   {
@@ -41,7 +42,8 @@ const OPTIONS = [
     id: "request",
     icon: "$",
     title: "Request Money",
-    description: "Request money from a person or business using Interac e-Transfer®",
+    description:
+      "Request money from a person or business using Interac e-Transfer®",
   },
   {
     id: "global-transfer",

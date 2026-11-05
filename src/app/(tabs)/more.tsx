@@ -38,7 +38,13 @@ const SECTIONS = [
   {
     id: "verification",
     title: "Verification",
-    items: [{ id: "verification-requests", icon: "♙", label: "Verification Requests" }],
+    items: [
+      {
+        id: "verification-requests",
+        icon: "♙",
+        label: "Verification Requests",
+      },
+    ],
   },
 ];
 

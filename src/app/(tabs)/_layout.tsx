@@ -5,10 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../constants/colors";
 
 type TabRouteName = "index" | "move-money" | "more";
-type TabRoutePath =
-  | "/(tabs)"
-  | "/(tabs)/move-money"
-  | "/(tabs)/more";
+type TabRoutePath = "/(tabs)" | "/(tabs)/move-money" | "/(tabs)/more";
 
 type NavItem = {
   label: string;

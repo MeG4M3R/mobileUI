@@ -1,11 +1,5 @@
 import { router } from "expo-router";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ActionCard from "./ActionCard";
@@ -58,7 +52,7 @@ export default function AccountDetailScreen({
         </View>
 
         <View style={styles.accountHeader}>
-          <Text style={styles.accountNumber}>{account.accountNumber.slice(-7)}</Text>
+          <Text style={styles.accountNumber}>{account.accountNumber}</Text>
           <Text style={styles.accountName}>{account.name}</Text>
           <Text style={styles.balance}>{formatBalance(account.balance)}</Text>
         </View>
@@ -79,27 +73,25 @@ export default function AccountDetailScreen({
         </ScrollView>
 
         <View style={styles.sectionTabs}>
-          {(["Activity", "Details", "Manage"] as const).map(
-            (label, index) => {
-              const isActive = index === 0;
+          {(["Activity", "Details", "Manage"] as const).map((label, index) => {
+            const isActive = index === 0;
 
-              return (
-                <View
-                  key={label}
-                  style={[styles.sectionTab, isActive && styles.sectionTabActive]}
+            return (
+              <View
+                key={label}
+                style={[styles.sectionTab, isActive && styles.sectionTabActive]}
+              >
+                <Text
+                  style={[
+                    styles.sectionTabText,
+                    isActive && styles.sectionTabActiveText,
+                  ]}
                 >
-                  <Text
-                    style={[
-                      styles.sectionTabText,
-                      isActive && styles.sectionTabActiveText,
-                    ]}
-                  >
-                    {label}
-                  </Text>
-                </View>
-              );
-            },
-          )}
+                  {label}
+                </Text>
+              </View>
+            );
+          })}
         </View>
 
         <View style={styles.transactionsHeading}>
