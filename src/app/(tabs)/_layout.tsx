@@ -1,23 +1,31 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../constants/colors";
 
 type TabRouteName = "index" | "move-money" | "more";
+type TabRoutePath = "/(tabs)" | "/(tabs)/move-money" | "/(tabs)/more";
 
 type NavItem = {
   label: string;
   icon: string;
-  routeName?: TabRouteName;
+  route?: {
+    name: TabRouteName;
+    path: TabRoutePath;
+  };
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", icon: "⌂", routeName: "index" },
+  { label: "Home", icon: "⌂", route: { name: "index", path: "/(tabs)" } },
   { label: "Accounts", icon: "▱" },
-  { label: "Move Money", icon: "$", routeName: "move-money" },
+  {
+    label: "Move Money",
+    icon: "$",
+    route: { name: "move-money", path: "/(tabs)/move-money" },
+  },
   { label: "Rewards", icon: "♧" },
-  { label: "More", icon: "☰", routeName: "more" },
+  { label: "More", icon: "☰", route: { name: "more", path: "/(tabs)/more" } },
 ] as const;
 
 export default function TabLayout() {
@@ -37,14 +45,15 @@ type TabBarProps = Parameters<
   NonNullable<ComponentProps<typeof Tabs>["tabBar"]>
 >[0];
 
-function AppTabBar({ state, navigation }: TabBarProps) {
+function AppTabBar({ state }: TabBarProps) {
+  const router = useRouter();
   const activeRoute = state.routes[state.index]?.name;
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
       <View style={styles.bar}>
         {NAV_ITEMS.map((item) => {
-          const isActive = item.routeName === activeRoute;
+          const isActive = item.route?.name === activeRoute;
           const contents = (
             <>
               <Text style={[styles.icon, isActive && styles.activeIcon]}>
@@ -54,7 +63,7 @@ function AppTabBar({ state, navigation }: TabBarProps) {
             </>
           );
 
-          if (!item.routeName) {
+          if (!item.route) {
             return (
               <View key={item.label} style={styles.item}>
                 {contents}
@@ -62,14 +71,14 @@ function AppTabBar({ state, navigation }: TabBarProps) {
             );
           }
 
-          const routeName = item.routeName;
+          const route = item.route;
 
           return (
             <Pressable
               key={item.label}
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
-              onPress={() => navigation.navigate(routeName)}
+              onPress={() => router.navigate(route.path)}
               style={[styles.item, isActive && styles.activeItem]}
             >
               {contents}
