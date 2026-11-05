@@ -1,9 +1,9 @@
 import { useLocalSearchParams } from "expo-router";
-import AccountDetailScreen from "../../components/AccountDetailScreen";
-import PlaceholderScreen from "../../components/PlaceholderScreen";
-import { ACCOUNTS } from "../../data/accounts";
+import AccountDetailScreen from "../components/AccountDetailScreen";
+import PlaceholderScreen from "../components/PlaceholderScreen";
+import { ACCOUNTS } from "../data/accounts";
 
-export default function AccountRoute() {
+export default function AccountDetailRoute() {
   const { accountId } = useLocalSearchParams<{ accountId: string }>();
   const account = ACCOUNTS.find((item) => item.id === accountId);
 

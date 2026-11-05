@@ -79,7 +79,7 @@ export default function Index() {
                 section.id === "banking"
                   ? (account) =>
                       router.push({
-                        pathname: "/accounts/[accountId]",
+                        pathname: "/account-detail",
                         params: { accountId: account.id },
                       })
                   : undefined
