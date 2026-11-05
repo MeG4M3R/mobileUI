@@ -1,6 +1,4 @@
 import {
-  Alert,
-  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -134,16 +132,6 @@ export default function Index() {
           );
         })}
 
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => Alert.alert("Alert", "Alert Button pressed")}
-          style={({ pressed }) => [
-            styles.alertButton,
-            pressed && styles.alertButtonPressed,
-          ]}
-        >
-          <Text style={styles.alertButtonText}>Alert</Text>
-        </Pressable>
       </ScrollView>
 
       <SafeAreaView edges={["bottom"]} style={styles.safeNavigation}>
@@ -242,23 +230,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 22,
     paddingHorizontal: 4,
-  },
-  alertButton: {
-    minHeight: 48,
-    marginTop: 8,
-    marginBottom: 8,
-    borderRadius: 24,
-    backgroundColor: "#E53935",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  alertButtonPressed: {
-    opacity: 0.8,
-  },
-  alertButtonText: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: "600",
   },
   headingTitle: {
     flexDirection: "row",
