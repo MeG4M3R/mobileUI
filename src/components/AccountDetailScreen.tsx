@@ -1,7 +1,17 @@
 import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ActionCard from "./ActionCard";
 import { COLORS } from "../constants/colors";
+import { QUICK_ACTIONS } from "../data/quickActions";
+import { getAccountTransactions } from "../data/accountTransactions";
 import { formatBalance, type Account } from "../utils/account";
 
 type AccountDetailScreenProps = {
@@ -11,36 +21,113 @@ type AccountDetailScreenProps = {
 export default function AccountDetailScreen({
   account,
 }: AccountDetailScreenProps) {
-  return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to accounts"
-          onPress={() => router.back()}
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.backText}>‹ My Accounts</Text>
-        </Pressable>
+  const transactions = getAccountTransactions(account.id, account.balance);
+  const groupedTransactions = transactions.reduce<
+    { date: string; transactions: typeof transactions }[]
+  >((groups, transaction) => {
+    const lastGroup = groups[groups.length - 1];
+    if (lastGroup?.date === transaction.date) {
+      lastGroup.transactions.push(transaction);
+    } else {
+      groups.push({ date: transaction.date, transactions: [transaction] });
+    }
+    return groups;
+  }, []);
 
-        <Text style={styles.title}>{account.name}</Text>
-        <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Available balance</Text>
+  return (
+    <SafeAreaView edges={["top"]} style={styles.screen}>
+      <StatusBar style="light" />
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.topBar}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back to accounts"
+            onPress={() => router.back()}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <Text style={styles.backIcon}>‹</Text>
+          </Pressable>
+          <Text style={styles.headerTitle}>Banking</Text>
+          <View style={styles.topBarSpacer} />
+        </View>
+
+        <View style={styles.accountHeader}>
+          <Text style={styles.accountNumber}>{account.accountNumber.slice(-7)}</Text>
+          <Text style={styles.accountName}>{account.name}</Text>
           <Text style={styles.balance}>{formatBalance(account.balance)}</Text>
-          <Text style={styles.accountNumber}>
-            Account number  •••• {account.accountNumber.slice(-4)}
-          </Text>
         </View>
-        <View style={styles.placeholder}>
-          <Text style={styles.placeholderTitle}>Account details</Text>
-          <Text style={styles.placeholderText}>
-            Account activity and features will be added here.
-          </Text>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.actions}
+          contentContainerStyle={styles.actionContent}
+        >
+          {QUICK_ACTIONS.map((action) => (
+            <ActionCard
+              key={action.id}
+              label={action.label}
+              icon={action.icon}
+            />
+          ))}
+        </ScrollView>
+
+        <View style={styles.sectionTabs}>
+          <View style={styles.sectionTabActive}>
+            <Text style={styles.sectionTabActiveText}>Activity</Text>
+          </View>
+          <Text style={styles.sectionTabText}>Details</Text>
+          <Text style={styles.sectionTabText}>Manage</Text>
         </View>
-      </View>
+
+        <View style={styles.transactionsHeading}>
+          <Text style={styles.transactionsTitle}>Transactions</Text>
+          <View style={styles.headingActions}>
+            <View style={styles.headingAction}>
+              <Text style={styles.headingActionIcon}>▣</Text>
+            </View>
+            <View style={styles.headingAction}>
+              <Text style={styles.headingActionIcon}>⌕</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.transactionCard}>
+          {groupedTransactions.map((group) => (
+            <View key={group.date}>
+              <Text style={styles.dateHeading}>{group.date}</Text>
+              {group.transactions.map((transaction, index) => (
+                <View
+                  key={transaction.id}
+                  style={[
+                    styles.transactionRow,
+                    index === group.transactions.length - 1 &&
+                      styles.lastTransactionInGroup,
+                  ]}
+                >
+                  <Text style={styles.transactionName}>
+                    {transaction.description}
+                  </Text>
+                  <View style={styles.transactionAmounts}>
+                    <Text style={styles.transactionAmount}>
+                      {formatBalance(transaction.amountCents / 100)}
+                    </Text>
+                    <Text style={styles.runningBalance}>
+                      {formatBalance(transaction.balanceAfterCents / 100)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -51,69 +138,178 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.black,
   },
   content: {
-    flex: 1,
-    padding: 20,
+    paddingBottom: 24,
+  },
+  topBar: {
+    height: 72,
+    marginHorizontal: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   backButton: {
-    alignSelf: "flex-start",
-    paddingVertical: 8,
-    paddingRight: 12,
-    marginBottom: 24,
-  },
-  backText: {
-    color: COLORS.accent,
-    fontSize: 17,
-    fontWeight: "600",
-  },
-  title: {
-    color: COLORS.white,
-    fontSize: 23,
-    lineHeight: 30,
-    fontWeight: "700",
-    marginBottom: 20,
-  },
-  balanceCard: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: COLORS.darkGray,
-    borderRadius: 16,
-    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: COLORS.divider,
   },
-  balanceLabel: {
-    color: COLORS.lightGray,
-    fontSize: 14,
-  },
-  balance: {
+  backIcon: {
     color: COLORS.white,
-    fontSize: 30,
-    fontWeight: "700",
-    marginTop: 8,
+    fontSize: 46,
+    lineHeight: 48,
+    marginTop: -5,
+  },
+  headerTitle: {
+    color: COLORS.white,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  topBarSpacer: {
+    width: 52,
+  },
+  accountHeader: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
   },
   accountNumber: {
     color: COLORS.lightGray,
-    fontSize: 14,
-    marginTop: 14,
+    fontSize: 16,
+    marginBottom: 8,
   },
-  placeholder: {
-    marginTop: 20,
-    backgroundColor: COLORS.darkGray,
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: COLORS.divider,
-  },
-  placeholderTitle: {
+  accountName: {
     color: COLORS.white,
-    fontSize: 18,
+    fontSize: 20,
+    lineHeight: 27,
     fontWeight: "600",
   },
-  placeholderText: {
+  balance: {
+    color: COLORS.white,
+    fontSize: 42,
+    lineHeight: 52,
+    fontWeight: "700",
+    marginTop: 36,
+  },
+  actions: {
+    marginTop: 38,
+    height: 68,
+  },
+  actionContent: {
+    paddingHorizontal: 20,
+    alignItems: "center",
+    gap: 12,
+  },
+  sectionTabs: {
+    marginTop: 38,
+    height: 62,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.divider,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "stretch",
+  },
+  sectionTabActive: {
+    minWidth: 110,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.accent,
+  },
+  sectionTabActiveText: {
+    color: COLORS.white,
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  sectionTabText: {
+    minWidth: 110,
+    color: COLORS.accent,
+    fontSize: 17,
+    fontWeight: "600",
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
+  transactionsHeading: {
+    paddingHorizontal: 20,
+    paddingTop: 26,
+    paddingBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  transactionsTitle: {
+    color: COLORS.white,
+    fontSize: 26,
+    fontWeight: "700",
+  },
+  headingActions: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  headingAction: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: COLORS.darkGray,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headingActionIcon: {
+    color: COLORS.accent,
+    fontSize: 31,
+    lineHeight: 36,
+  },
+  transactionCard: {
+    marginHorizontal: 16,
+    backgroundColor: COLORS.darkGray,
+    borderRadius: 15,
+    overflow: "hidden",
+  },
+  dateHeading: {
     color: COLORS.lightGray,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 8,
+    fontSize: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.divider,
+  },
+  transactionRow: {
+    minHeight: 94,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.divider,
+    gap: 12,
+  },
+  lastTransactionInGroup: {
+    borderBottomWidth: 0,
+  },
+  transactionName: {
+    flex: 1,
+    color: COLORS.white,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "600",
+  },
+  transactionAmounts: {
+    alignItems: "flex-end",
+  },
+  transactionAmount: {
+    color: COLORS.white,
+    fontSize: 17,
+    fontWeight: "500",
+  },
+  runningBalance: {
+    color: COLORS.lightGray,
+    fontSize: 13,
+    marginTop: 2,
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.75,
   },
 });

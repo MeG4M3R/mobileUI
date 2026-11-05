@@ -47,7 +47,8 @@ type TabBarProps = Parameters<
 
 function AppTabBar({ state }: TabBarProps) {
   const router = useRouter();
-  const activeRoute = state.routes[state.index]?.name;
+  const currentRoute = state.routes[state.index]?.name;
+  const activeRoute = currentRoute;
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safeArea}>

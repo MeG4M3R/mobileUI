@@ -1,26 +1,18 @@
 import {
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ActionCard from "../../components/ActionCard";
 import SectionCard from "../../components/SectionCard";
 import { ACCOUNTS, SECTIONS } from "../../data/accounts";
+import { QUICK_ACTIONS } from "../../data/quickActions";
 import { COLORS } from "../../constants/colors";
 import type { Account } from "../../utils/account";
-
-const ACTIONS = [
-  { id: "transfer", label: "Interac e-Transfer", icon: "➤" },
-  { id: "move", label: "Transfer", icon: "⇄" },
-  { id: "pay", label: "Pay Bills", icon: "▤" },
-  { id: "deposit", label: "Deposit Cheque", icon: "▣" },
-  { id: "global", label: "TD Global Transfer", icon: "◎" },
-  { id: "request", label: "Request Money", icon: "↻" },
-];
 
 export default function Index() {
   const router = useRouter();
@@ -30,7 +22,7 @@ export default function Index() {
 
   return (
     <View style={styles.screen}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.green} />
+      <StatusBar style="light" />
       <SafeAreaView edges={["top"]} style={styles.safeHeader}>
         <View style={styles.hero}>
           <View style={styles.messageButton}>
@@ -46,7 +38,7 @@ export default function Index() {
             style={styles.actions}
             contentContainerStyle={styles.actionContent}
           >
-            {ACTIONS.map((action) => (
+            {QUICK_ACTIONS.map((action) => (
               <ActionCard
                 key={action.id}
                 label={action.label}
