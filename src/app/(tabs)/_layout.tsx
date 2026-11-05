@@ -1,11 +1,14 @@
-import { Tabs, useRouter } from "expo-router";
+import { Tabs, useRouter, type Href } from "expo-router";
 import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../constants/colors";
 
 type TabRouteName = "index" | "move-money" | "more";
-type TabRoutePath = "/(tabs)" | "/(tabs)/move-money" | "/(tabs)/more";
+type TabRoutePath =
+  | "/(tabs)"
+  | "/(tabs)/move-money"
+  | "/(tabs)/more";
 
 type NavItem = {
   label: string;
@@ -17,7 +20,11 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", icon: "⌂", route: { name: "index", path: "/(tabs)" } },
+  {
+    label: "Home",
+    icon: "⌂",
+    route: { name: "index", path: "/(tabs)" },
+  },
   { label: "Accounts", icon: "▱" },
   {
     label: "Move Money",
@@ -79,7 +86,7 @@ function AppTabBar({ state }: TabBarProps) {
               key={item.label}
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
-              onPress={() => router.navigate(route.path)}
+              onPress={() => router.navigate(route.path as Href)}
               style={[styles.item, isActive && styles.activeItem]}
             >
               {contents}
