@@ -9,6 +9,7 @@ type SectionCardProps = {
   accounts: Account[];
   showTotalBalance?: boolean;
   collapsible?: boolean;
+  onAccountPress?: (account: Account) => void;
 };
 
 export default function SectionCard({
@@ -17,6 +18,7 @@ export default function SectionCard({
   accounts,
   showTotalBalance = false,
   collapsible = false,
+  onAccountPress,
 }: SectionCardProps) {
   const totalBalance = accounts.reduce(
     (total, account) => total + account.balance,
@@ -40,6 +42,7 @@ export default function SectionCard({
           key={account.id}
           account={account}
           isLast={index === accounts.length - 1}
+          onPress={onAccountPress}
         />
       ))}
     </View>

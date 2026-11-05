@@ -5,11 +5,13 @@ import {
   Text,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ActionCard from "../components/ActionCard";
-import SectionCard from "../components/SectionCard";
-import { COLORS } from "../constants/colors";
-import type { Account } from "../utils/account";
+import ActionCard from "../../components/ActionCard";
+import SectionCard from "../../components/SectionCard";
+import { ACCOUNTS, SECTIONS } from "../../data/accounts";
+import { COLORS } from "../../constants/colors";
+import type { Account } from "../../utils/account";
 
 const ACTIONS = [
   { id: "transfer", label: "Interac e-Transfer", icon: "➤" },
@@ -20,55 +22,8 @@ const ACTIONS = [
   { id: "request", label: "Request Money", icon: "↻" },
 ];
 
-const ACCOUNTS: Account[] = [
-  {
-    id: "ac1",
-    name: "TD STUDENT CHEQUING ACCOUNT",
-    balance: 111111.11,
-    accountNumber: "1111111111111111",
-  },
-  {
-    id: "ac2",
-    name: "TD EVERY DAY SAVINGS ACCOUNT",
-    balance: 222222.22,
-    accountNumber: "2222222222222222",
-  },
-  {
-    id: "ac3",
-    name: "TD CASH BACK VISA* CARD",
-    balance: 33333.33,
-    accountNumber: "3333333333333333",
-  },
-  {
-    id: "ac4",
-    name: "MULTI-HOLDING TFSA",
-    balance: 444444.44,
-    accountNumber: "4444444444444444",
-  },
-];
-
-const SECTIONS = [
-  {
-    id: "banking",
-    name: "Banking",
-    subtitle: "2 accounts",
-    accountIds: ["ac1", "ac2"],
-    showTotalBalance: true,
-    collapsible: true,
-  },
-  { id: "cards", name: "Credit Cards", accountIds: ["ac3"] },
-  { id: "investing", name: "Personal Investing", accountIds: ["ac4"] },
-];
-
-const NAV_ITEMS = [
-  { label: "Home", icon: "⌂" },
-  { label: "Accounts", icon: "▱" },
-  { label: "Move Money", icon: "$" },
-  { label: "Rewards", icon: "♧" },
-  { label: "More", icon: "☰" },
-];
-
 export default function Index() {
+  const router = useRouter();
   const accountsById = new Map(
     ACCOUNTS.map((account) => [account.id, account]),
   );
@@ -128,33 +83,19 @@ export default function Index() {
               accounts={accounts}
               showTotalBalance={section.showTotalBalance}
               collapsible={section.collapsible}
+              onAccountPress={
+                section.id === "banking"
+                  ? (account) =>
+                      router.push({
+                        pathname: "/accounts/[accountId]",
+                        params: { accountId: account.id },
+                      })
+                  : undefined
+              }
             />
           );
         })}
-
       </ScrollView>
-
-      <SafeAreaView edges={["bottom"]} style={styles.safeNavigation}>
-        <View style={styles.navigation}>
-          {NAV_ITEMS.map((item, index) => (
-            <View
-              key={item.label}
-              style={[styles.navItem, index === 0 && styles.activeNavItem]}
-            >
-              <Text
-                style={[styles.navIcon, index === 0 && styles.activeNavIcon]}
-              >
-                {item.icon}
-              </Text>
-              <Text
-                style={[styles.navLabel, index === 0 && styles.activeNavLabel]}
-              >
-                {item.label}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </SafeAreaView>
     </View>
   );
 }
@@ -251,48 +192,5 @@ const styles = StyleSheet.create({
     color: COLORS.lightGray,
     fontSize: 20,
     letterSpacing: 2,
-  },
-  safeNavigation: {
-    backgroundColor: COLORS.black,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
-  navigation: {
-    minHeight: 72,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: COLORS.divider,
-    backgroundColor: COLORS.darkGray,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    paddingHorizontal: 4,
-    marginBottom: 6,
-  },
-  navItem: {
-    flex: 1,
-    minHeight: 64,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 34,
-  },
-  activeNavItem: {
-    backgroundColor: COLORS.black,
-  },
-  navIcon: {
-    color: COLORS.white,
-    fontSize: 25,
-    lineHeight: 29,
-  },
-  activeNavIcon: {
-    color: COLORS.accent,
-  },
-  navLabel: {
-    color: COLORS.white,
-    fontSize: 11,
-    marginTop: 2,
-  },
-  activeNavLabel: {
-    fontWeight: "600",
   },
 });

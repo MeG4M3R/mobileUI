@@ -1,24 +1,41 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/colors";
 import { formatBalance, type Account } from "../utils/account";
 
 type AccountCardProps = {
   account: Account;
   isLast?: boolean;
+  onPress?: (account: Account) => void;
 };
 
 export default function AccountCard({
   account,
   isLast = false,
+  onPress,
 }: AccountCardProps) {
-  return (
-    <View style={[styles.row, isLast && styles.lastRow]}>
+  const content = (
+    <>
       <View style={styles.details}>
         <Text style={styles.name}>{account.name}</Text>
         <Text style={styles.number}>{account.accountNumber}</Text>
       </View>
       <Text style={styles.balance}>{formatBalance(account.balance)}</Text>
-    </View>
+    </>
+  );
+  const rowStyle = [styles.row, isLast && styles.lastRow];
+
+  if (!onPress) {
+    return <View style={rowStyle}>{content}</View>;
+  }
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => onPress(account)}
+      style={({ pressed }) => [rowStyle, pressed && styles.pressed]}
+    >
+      {content}
+    </Pressable>
   );
 }
 
@@ -35,6 +52,9 @@ const styles = StyleSheet.create({
   },
   lastRow: {
     borderBottomWidth: 0,
+  },
+  pressed: {
+    opacity: 0.75,
   },
   details: {
     flex: 1,
