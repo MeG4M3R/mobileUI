@@ -79,11 +79,27 @@ export default function AccountDetailScreen({
         </ScrollView>
 
         <View style={styles.sectionTabs}>
-          <View style={styles.sectionTabActive}>
-            <Text style={styles.sectionTabActiveText}>Activity</Text>
-          </View>
-          <Text style={styles.sectionTabText}>Details</Text>
-          <Text style={styles.sectionTabText}>Manage</Text>
+          {(["Activity", "Details", "Manage"] as const).map(
+            (label, index) => {
+              const isActive = index === 0;
+
+              return (
+                <View
+                  key={label}
+                  style={[styles.sectionTab, isActive && styles.sectionTabActive]}
+                >
+                  <Text
+                    style={[
+                      styles.sectionTabText,
+                      isActive && styles.sectionTabActiveText,
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                </View>
+              );
+            },
+          )}
         </View>
 
         <View style={styles.transactionsHeading}>
@@ -208,13 +224,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.divider,
     flexDirection: "row",
-    justifyContent: "space-around",
     alignItems: "stretch",
   },
-  sectionTabActive: {
-    minWidth: 110,
+  sectionTab: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  sectionTabActive: {
     borderBottomWidth: 3,
     borderBottomColor: COLORS.accent,
   },
@@ -224,12 +241,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   sectionTabText: {
-    minWidth: 110,
     color: COLORS.accent,
     fontSize: 17,
     fontWeight: "600",
     textAlign: "center",
-    textAlignVertical: "center",
   },
   transactionsHeading: {
     paddingHorizontal: 20,
